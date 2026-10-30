@@ -11,7 +11,26 @@
       "Bash(git log:*)",
       "mcp__figma__get_figma_data",
       "mcp__github__create_repository",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git remote *)",
+      "Bash(git push *)",
+      "Bash(npx expo *)",
+      "Bash(echo \"started with pid $!\")",
+      "Read(//tmp/**)",
+      "Read(//private/tmp/**)",
+      "Bash(CI=1 npx expo start > /tmp/expo-start.log 2>&1 & *)",
+      "Bash(curl -s \"http://localhost:8081/index.bundle?platform=ios&dev=true\" -o /tmp/bundle.js -w \"HTTP %{http_code}\\\\n\" --max-time 90)",
+      "Bash(pkill -f \"expo start\")",
+      "Bash(pkill -f \"metro\")",
+      "mcp__figma__download_figma_images",
+      "WebFetch(domain:docs.expo.dev)",
+      "Bash(node -e ' *)",
+      "Bash(curl -s \"http://localhost:8082/index.bundle?platform=ios&dev=true\" -o /tmp/bundle2.js -w \"HTTP %{http_code}\\\\n\" --max-time 90)",
+      "Bash(python3 -I -c ' *)"
+    ],
+    "additionalDirectories": [
+      "/tmp"
     ]
   },
   "enabledPlugins": {
