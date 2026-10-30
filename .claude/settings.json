@@ -1,4 +1,19 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(npx expo install:*)",
+      "Bash(npx expo start:*)",
+      "Bash(npx expo lint:*)",
+      "Bash(npx expo-doctor:*)",
+      "Bash(npx tsc --noEmit:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "mcp__figma__get_figma_data",
+      "mcp__github__create_repository",
+      "Bash(git add *)"
+    ]
+  },
   "enabledPlugins": {
     "expo@claude-plugins-official": true
   }
