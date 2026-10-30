@@ -3,10 +3,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { colors, fonts } from '../theme';
 
-export default function MedicationsScreen() {
+export default function ClinicsScreen() {
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>الأدوية</Text>
+      <Text style={styles.title}>العيادات</Text>
     </SafeAreaView>
   );
 }

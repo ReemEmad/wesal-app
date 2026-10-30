@@ -5,6 +5,7 @@ import Svg, { Circle } from 'react-native-svg';
 
 import { FigmaIcon } from '../components/FigmaIcon';
 import { colors, fonts, radius, spacing } from '../theme';
+import { toArabicDigits } from '../utils/arabic';
 
 type DoseStatus = 'confirmed' | 'pending' | 'upcoming';
 
@@ -40,12 +41,6 @@ const RING_SIZE = 108;
 const RING_STROKE = 12;
 const RING_RADIUS = (RING_SIZE - RING_STROKE) / 2;
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
-
-const ARABIC_DIGITS =['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-
-function toArabicDigits(value: number): string {
-  return String(value).replace(/\d/g, (digit) => ARABIC_DIGITS[Number(digit)]);
-}
 
 function StatusBadge({ status }: { status: DoseStatus }) {
   const config = STATUS_CONFIG[status];
