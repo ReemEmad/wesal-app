@@ -9,6 +9,7 @@ import { Alert, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { RoundButton } from '../../components/Buttons';
+import { useMedications } from '../../context/MedicationsContext';
 import { RootStackParamList } from '../../navigation/types';
 import { colors, fonts, spacing } from '../../theme';
 
@@ -19,8 +20,13 @@ export default function ScanBoxScreen({ navigation }: NativeStackScreenProps<Roo
   const [ready, setReady] = useState(false);
   const [torch, setTorch] = useState(false);
   const [busy, setBusy] = useState(false);
+  const { patchDraft } = useMedications();
 
-  const goToForm = () => navigation.navigate('MedicationForm');
+  const goToForm = () => {
+    // Demo: simulates OCR auto-fill from the box photo until that detection is built.
+    patchDraft({ name: 'جاسيفلاتيل', form: 'tablet', unit: 'قرص', mealTiming: 'after' });
+    navigation.navigate('MedicationForm');
+  };
 
   const capture = async () => {
     if (!ready || busy) return;
