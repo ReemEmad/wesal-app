@@ -1,0 +1,251 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+paths:
+  /wesal/auth/register:
+    post:
+      operationId: registerWesal
+      tags: [wesal]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/RegisterInput" }
+      responses:
+        "201":
+          description: Registered, phone number remains unverified
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AuthSession" }
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/WesalError" }
+  /wesal/auth/login:
+    post:
+      operationId: loginWesal
+      tags: [wesal]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/LoginInput" }
+      responses:
+        "200":
+          description: Signed in
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AuthSession" }
+        "401":
+          description: Incorrect credentials
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/WesalError" }
+  /wesal/auth/me:
+    get:
+      operationId: getWesalMe
+      tags: [wesal]
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          description: Current account
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/WesalUser" }
+  /wesal/auth/logout:
+    post:
+      operationId: logoutWesal
+      tags: [wesal]
+      security: [{ bearerAuth: [] }]
+      responses:
+        "204": { description: Session revoked }
+  /wesal/invitations:
+    get:
+      operationId: listWesalInvitations
+      tags: [wesal]
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          description: Invitations sent and consented relationships received by this account only
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/InvitationLists" }
+    post:
+      operationId: createWesalInvitation
+      tags: [wesal]
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/InvitationInput" }
+      responses:
+        "201":
+          description: Created but not delivered; share manually
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CreatedInvitation" }
+  /wesal/invitations/preview/{token}:
+    get:
+      operationId: previewWesalInvitation
+      tags: [wesal]
+      parameters:
+        - { name: token, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: Minimal public context; never contains recipient details
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/InvitationPreview" }
+  /wesal/invitations/accept:
+    post:
+      operationId: acceptWesalInvitation
+      tags: [wesal]
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AcceptInvitationInput" }
+      responses:
+        "200":
+          description: Explicit consent recorded for the intended account
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CareInvitation" }
+  /wesal/invitations/{id}/revoke:
+    post:
+      operationId: revokeWesalInvitation
+      tags: [wesal]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "204": { description: Owner revoked the invitation or relationship }
+  /wesal/invitations/{id}/withdraw:
+    post:
+      operationId: withdrawWesalConsent
+      tags: [wesal]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "204": { description: Recipient withdrew consent }
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    WesalUser:
+      type: object
+      required: [id, name, phone, phoneVerified]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        phone: { type: string }
+        email: { type: [string, "null"] }
+        phoneVerified: { type: boolean }
+    RegisterInput:
+      type: object
+      required: [name, phone, password]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 120 }
+        phone: { type: string, description: International format including country code }
+        email: { type: string }
+        password: { type: string, minLength: 10, maxLength: 128 }
+    LoginInput:
+      type: object
+      required: [phone, password]
+      properties:
+        phone: { type: string }
+        password: { type: string }
+    AuthSession:
+      type: object
+      required: [token, user]
+      properties:
+        token: { type: string }
+        user: { $ref: "#/components/schemas/WesalUser" }
+    CareInvitation:
+      type: object
+      required: [id, recipientName, recipientPhone, birthDate, relationship, status, expiresAt, createdAt, caregiverName]
+      properties:
+        id: { type: string }
+        recipientName: { type: string }
+        recipientPhone: { type: string }
+        birthDate: { type: string }
+        relationship: { type: string }
+        status: { type: string, enum: [pending, accepted, revoked, expired] }
+        expiresAt: { type: string }
+        createdAt: { type: string }
+        caregiverName: { type: string }
+    InvitationInput:
+      type: object
+      required: [recipientName, recipientPhone, birthDate, relationship]
+      properties:
+        recipientName: { type: string, minLength: 2, maxLength: 120 }
+        recipientPhone: { type: string }
+        birthDate: { type: string, description: YYYY-MM-DD }
+        relationship: { type: string, enum: [father, mother, spouse, relative, friend, other] }
+    CreatedInvitation:
+      type: object
+      required: [invitation, token]
+      properties:
+        invitation: { $ref: "#/components/schemas/CareInvitation" }
+        token: { type: string, description: Secret token returned only on creation }
+    InvitationLists:
+      type: object
+      required: [sent, received]
+      properties:
+        sent: { type: array, items: { $ref: "#/components/schemas/CareInvitation" } }
+        received: { type: array, items: { $ref: "#/components/schemas/CareInvitation" } }
+    InvitationPreview:
+      type: object
+      required: [caregiverName, relationship, expiresAt, status]
+      properties:
+        caregiverName: { type: string }
+        relationship: { type: string }
+        expiresAt: { type: string }
+        status: { type: string, enum: [pending, accepted, revoked, expired] }
+    AcceptInvitationInput:
+      type: object
+      required: [token, consent]
+      properties:
+        token: { type: string }
+        consent: { type: boolean, const: true }
+    WesalError:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string }
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+
