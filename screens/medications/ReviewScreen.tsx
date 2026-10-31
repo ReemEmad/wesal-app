@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { CommonActions } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -10,7 +11,7 @@ import { colors, fonts, radius, shadow, spacing } from '../../theme';
 import { doseText, durationText, stockText, timesText, timingText } from '../../utils/medication';
 
 export default function ReviewScreen({ navigation }: NativeStackScreenProps<RootStackParamList, 'Review'>) {
-  const { draft, saveDraft } = useMedications();
+  const { draft, saveDraft, target } = useMedications();
 
   const rows = [
     { label: 'اسم الدواء', value: draft.name },
@@ -23,6 +24,12 @@ export default function ReviewScreen({ navigation }: NativeStackScreenProps<Root
 
   const save = () => {
     const id = saveDraft();
+    if (target) {
+      navigation.dispatch(
+        CommonActions.navigate({ name: 'MedicationAdded', params: { patientId: target.patientId, medicationId: id } })
+      );
+      return;
+    }
     navigation.navigate('Added', { id });
   };
 
@@ -49,7 +56,9 @@ export default function ReviewScreen({ navigation }: NativeStackScreenProps<Root
       </View>
 
       <View style={styles.info}>
-        <Text style={styles.infoText}>سنرسل تذكيرًا لسعاد في موعد كل جرعة، وننبّهك إذا لم تُسجَّل الجرعة.</Text>
+        <Text style={styles.infoText}>
+          سنرسل تذكيرًا ل{target?.patientName ?? 'سعاد'} في موعد كل جرعة، وننبّهك إذا لم تُسجَّل الجرعة.
+        </Text>
         <Ionicons name="information-circle-outline" size={24} color={colors.info} />
       </View>
     </WizardScreen>

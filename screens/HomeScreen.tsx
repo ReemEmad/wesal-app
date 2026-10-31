@@ -281,9 +281,9 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#FB2C36',
+    backgroundColor: colors.badgeRed,
     borderWidth: 1.3,
-    borderColor: '#FF6900',
+    borderColor: colors.badgeRedRing,
   },
   headerRight: {
     flexDirection: 'row',

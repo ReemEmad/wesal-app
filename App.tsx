@@ -9,21 +9,17 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import { ActivityIndicator, View } from 'react-native';
 
+import { ClinicProvider } from './context/ClinicContext';
 import { MedicationsProvider } from './context/MedicationsContext';
-import MainTabs from './navigation/MainTabs';
-import { RootStackParamList } from './navigation/types';
-import AddedScreen from './screens/medications/AddedScreen';
-import AddMethodScreen from './screens/medications/AddMethodScreen';
-import DoseScheduleScreen from './screens/medications/DoseScheduleScreen';
-import DurationStockScreen from './screens/medications/DurationStockScreen';
-import MedicationFormScreen from './screens/medications/MedicationFormScreen';
-import ReviewScreen from './screens/medications/ReviewScreen';
-import ScanBoxScreen from './screens/medications/ScanBoxScreen';
+import CaregiverStack from './navigation/CaregiverStack';
+import ClinicStack from './navigation/ClinicStack';
+import { AppStackParamList } from './navigation/types';
+import RoleSelectScreen from './screens/RoleSelectScreen';
 import { colors } from './theme';
 
-export type { RootStackParamList } from './navigation/types';
+export type { AppStackParamList, RootStackParamList } from './navigation/types';
 
-const Stack = createNativeStackNavigator<RootStackParamList>();
+const Stack = createNativeStackNavigator<AppStackParamList>();
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -42,19 +38,16 @@ export default function App() {
 
   return (
     <MedicationsProvider>
-      <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="Main" component={MainTabs} />
-          <Stack.Screen name="AddMethod" component={AddMethodScreen} />
-          <Stack.Screen name="ScanBox" component={ScanBoxScreen} />
-          <Stack.Screen name="MedicationForm" component={MedicationFormScreen} />
-          <Stack.Screen name="DoseSchedule" component={DoseScheduleScreen} />
-          <Stack.Screen name="DurationStock" component={DurationStockScreen} />
-          <Stack.Screen name="Review" component={ReviewScreen} />
-          <Stack.Screen name="Added" component={AddedScreen} options={{ gestureEnabled: false }} />
-        </Stack.Navigator>
-        <StatusBar style="dark" />
-      </NavigationContainer>
+      <ClinicProvider>
+        <NavigationContainer>
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="RoleSelect" component={RoleSelectScreen} />
+            <Stack.Screen name="Caregiver" component={CaregiverStack} />
+            <Stack.Screen name="Clinic" component={ClinicStack} />
+          </Stack.Navigator>
+          <StatusBar style="dark" />
+        </NavigationContainer>
+      </ClinicProvider>
     </MedicationsProvider>
   );
 }

@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Footer, OutlineButton, PrimaryButton } from '../../components/Buttons';
@@ -27,11 +27,12 @@ export default function AddedScreen({ navigation, route }: NativeStackScreenProp
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.content}>
-        <View style={styles.illustrationOuter}>
-          <View style={styles.illustrationInner}>
-            <Ionicons name="checkmark" size={64} color={colors.surface} />
-          </View>
-        </View>
+        <Image
+          source={require('../../assets/illustrations/success-medication.png')}
+          style={styles.illustration}
+          resizeMode="contain"
+          accessibilityIgnoresInvertColors
+        />
 
         <Text style={styles.title}>{updated ? 'تم تحديث الدواء' : 'تمت إضافة الدواء'}</Text>
         <Text style={styles.body}>
@@ -73,22 +74,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     gap: spacing.lg,
   },
-  illustrationOuter: {
-    width: 180,
-    height: 180,
-    borderRadius: 90,
-    backgroundColor: colors.primaryLight,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.lg,
-  },
-  illustrationInner: {
-    width: 108,
-    height: 108,
-    borderRadius: 54,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
+  illustration: {
+    width: 260,
+    height: 260,
   },
   title: {
     fontFamily: fonts.semiBold,

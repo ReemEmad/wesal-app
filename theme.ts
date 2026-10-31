@@ -31,6 +31,13 @@ export const colors = {
   tileBlueIcon: '#2F5C8F',
   tileRose: '#F6E6E8',
   tileRoseIcon: '#9B2C3A',
+  adherenceLow: '#A33B48',
+  dangerSolid: '#DC3A2E',
+  badgeRed: '#FB2C36',
+  badgeRedRing: '#FF6900',
+  blobCool: '#E1E6EA',
+  blobWarm: '#E8E0D2',
+  sessionBanner: '#4C2F85',
   camera: '#222126',
   cameraAccent: '#C9B6E9',
 };

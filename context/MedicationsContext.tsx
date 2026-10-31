@@ -31,6 +31,12 @@ export type Medication = MedicationDraft & {
 
 export type DraftSource = 'manual' | 'camera';
 
+export type DraftTarget = {
+  patientId: string;
+  patientName: string;
+  onSave: (draft: MedicationDraft) => string;
+};
+
 export const DEFAULT_TIMES: Record<Frequency, number[]> = {
   1: [8 * 60],
   2: [8 * 60, 20 * 60],
@@ -132,8 +138,9 @@ type MedicationsContextValue = {
   draft: MedicationDraft;
   editingId: string | null;
   source: DraftSource;
+  target: DraftTarget | null;
   patchDraft: (patch: Partial<MedicationDraft>) => void;
-  startNew: (source: DraftSource) => void;
+  startNew: (source: DraftSource, target?: DraftTarget) => void;
   startEditing: (id: string) => void;
   saveDraft: () => string;
   removeMedication: (id: string) => void;
@@ -148,15 +155,17 @@ export function MedicationsProvider({ children }: { children: ReactNode }) {
   const [draft, setDraft] = useState<MedicationDraft>(createEmptyDraft);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [source, setSource] = useState<DraftSource>('manual');
+  const [target, setTarget] = useState<DraftTarget | null>(null);
 
   const patchDraft = useCallback((patch: Partial<MedicationDraft>) => {
     setDraft((current) => ({ ...current, ...patch }));
   }, []);
 
-  const startNew = useCallback((nextSource: DraftSource) => {
+  const startNew = useCallback((nextSource: DraftSource, nextTarget?: DraftTarget) => {
     setDraft(createEmptyDraft());
     setEditingId(null);
     setSource(nextSource);
+    setTarget(nextTarget ?? null);
   }, []);
 
   const getMedication = useCallback(
@@ -172,11 +181,13 @@ export function MedicationsProvider({ children }: { children: ReactNode }) {
       setDraft(rest);
       setEditingId(id);
       setSource('manual');
+      setTarget(null);
     },
     [medications]
   );
 
   const saveDraft = useCallback(() => {
+    if (target) return target.onSave(draft);
     if (editingId) {
       setMedications((current) =>
         current.map((medication) => (medication.id === editingId ? { ...medication, ...draft } : medication))
@@ -186,7 +197,7 @@ export function MedicationsProvider({ children }: { children: ReactNode }) {
     const id = `med-${Date.now()}`;
     setMedications((current) => [...current, { ...draft, id, status: 'active' }]);
     return id;
-  }, [draft, editingId]);
+  }, [draft, editingId, target]);
 
   const removeMedication = useCallback((id: string) => {
     setMedications((current) => current.filter((medication) => medication.id !== id));
@@ -208,6 +219,7 @@ export function MedicationsProvider({ children }: { children: ReactNode }) {
       draft,
       editingId,
       source,
+      target,
       patchDraft,
       startNew,
       startEditing,
@@ -216,7 +228,7 @@ export function MedicationsProvider({ children }: { children: ReactNode }) {
       togglePause,
       getMedication,
     }),
-    [medications, draft, editingId, source, patchDraft, startNew, startEditing, saveDraft, removeMedication, togglePause, getMedication]
+    [medications, draft, editingId, source, target, patchDraft, startNew, startEditing, saveDraft, removeMedication, togglePause, getMedication]
   );
 
   return <MedicationsContext.Provider value={value}>{children}</MedicationsContext.Provider>;
